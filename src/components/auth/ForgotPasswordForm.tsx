@@ -2,13 +2,19 @@
 
 import { useState } from "react";
 import { validatePassword } from "@/lib/utils/passwordValidation";
+import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
   onBack?: () => void;
 }
 
-type ResetStep = "request" | "verify" | "success";
+type ResetStep = "request" | "verify" | "reset" | "success";
 
 export default function ForgotPasswordForm({
   onSuccess,
@@ -42,6 +48,30 @@ export default function ForgotPasswordForm({
       setStep("verify");
     } catch (err) {
       setError("Failed to request password reset. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid verification code");
+      }
+
+      setStep("reset");
+    } catch (err) {
+      setError("Invalid verification code. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -144,8 +174,8 @@ export default function ForgotPasswordForm({
             {isLoading ? "Sending..." : "Send Reset Code"}
           </button>
         </form>
-      ) : (
-        <form onSubmit={handleResetPassword} className="space-y-4">
+      ) : step === "verify" ? (
+        <form onSubmit={handleVerifyOTP} className="space-y-4">
           <div>
             <label
               htmlFor="otp"
@@ -153,18 +183,33 @@ export default function ForgotPasswordForm({
             >
               Verification Code
             </label>
-            <input
-              type="text"
-              id="otp"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
-              required
-              maxLength={6}
-              pattern="[0-9]*"
-              inputMode="numeric"
-            />
+            <div className="flex justify-center">
+              <InputOTP
+                maxLength={6}
+                value={otp}
+                onChange={(value) => setOtp(value)}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
           </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+          >
+            {isLoading ? "Verifying..." : "Verify Code"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleResetPassword} className="space-y-4">
           <div>
             <label
               htmlFor="newPassword"
