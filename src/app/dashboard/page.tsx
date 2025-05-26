@@ -6,7 +6,8 @@ export default async function DashboardPage() {
   const session = await getServerSession();
 
   if (!session) {
-    redirect("/login");
+    // Redirect to home page where the auth modal can be shown
+    redirect("/");
   }
 
   // Ensure we're passing serializable data
