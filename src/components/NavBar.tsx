@@ -31,20 +31,15 @@ const NavBar = (props: Props) => {
 
         {/* Right side controls */}
         <div className="ml-auto flex items-center space-x-4">
-          {/* Desktop auth buttons */}
+          {/* Desktop auth button */}
           <div className="hidden md:flex items-center space-x-2">
             {!isLoggedIn ? (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link href="/login">Login</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/register">Register</Link>
-                </Button>
-              </>
+              <Button variant="ghost" asChild>
+                <Link href="/login">Sign In</Link>
+              </Button>
             ) : (
               <Button variant="ghost" onClick={() => setIsLoggedIn(false)}>
-                Logout
+                Sign Out
               </Button>
             )}
           </div>
@@ -59,14 +54,9 @@ const NavBar = (props: Props) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {!isLoggedIn ? (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/login">Login</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/register">Register</Link>
-                    </DropdownMenuItem>
-                  </>
+                  <DropdownMenuItem asChild>
+                    <Link href="/login">Sign In</Link>
+                  </DropdownMenuItem>
                 ) : (
                   <>
                     <DropdownMenuItem asChild>
@@ -77,7 +67,7 @@ const NavBar = (props: Props) => {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
-                      Logout
+                      Sign Out
                     </DropdownMenuItem>
                   </>
                 )}
@@ -119,7 +109,7 @@ const NavBar = (props: Props) => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
-                  Logout
+                  Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
