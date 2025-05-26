@@ -3,18 +3,79 @@
 import { useState } from "react";
 import Link from "next/link";
 
+type RegistrationStep = "email" | "details" | "success";
+
 export default function RegisterForm() {
+  const [step, setStep] = useState<RegistrationStep>("email");
+  const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    username: "",
+    otp: "",
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement registration logic
-    console.log("Registration attempt:", formData);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      // TODO: Call API to send OTP
+      const response = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send OTP");
+      }
+
+      setStep("details");
+    } catch (err) {
+      setError("Failed to send OTP. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDetailsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // TODO: Call API to verify OTP and create account
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          username: formData.username,
+          password: formData.password,
+          otp: formData.otp,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+
+      setStep("success");
+    } catch (err) {
+      setError("Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,92 +83,149 @@ export default function RegisterForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  if (step === "success") {
+    return (
+      <div className="text-center space-y-4">
+        <h3 className="text-xl font-semibold text-green-600">
+          Registration Successful!
+        </h3>
+        <p className="text-foreground">
+          Your account has been created successfully.
+        </p>
+        <Link
+          href="/login"
+          className="inline-block bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+        >
+          Proceed to Login
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-md mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
-        Register
+        {step === "email" ? "Start Registration" : "Complete Registration"}
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium mb-1 text-foreground"
+      {error && (
+        <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm">
+          {error}
+        </div>
+      )}
+      {step === "email" ? (
+        <form onSubmit={handleEmailSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium mb-1 text-foreground"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium mb-1 text-foreground"
+            {isLoading ? "Sending..." : "Send Verification Code"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleDetailsSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium mb-1 text-foreground"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+              required
+              minLength={3}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="otp"
+              className="block text-sm font-medium mb-1 text-foreground"
+            >
+              Verification Code
+            </label>
+            <input
+              type="text"
+              id="otp"
+              name="otp"
+              value={formData.otp}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+              required
+              pattern="[0-9]{6}"
+              maxLength={6}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1 text-foreground"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+              required
+              minLength={6}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium mb-1 text-foreground"
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium mb-1 text-foreground"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="block text-sm font-medium mb-1 text-foreground"
-          >
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors"
-        >
-          Register
-        </button>
-        <div className="text-center text-sm">
-          <Link href="/login" className="text-primary hover:underline">
-            Already have an account? Login
-          </Link>
-        </div>
-      </form>
+            {isLoading ? "Creating Account..." : "Create Account"}
+          </button>
+        </form>
+      )}
+      <div className="text-center text-sm mt-4">
+        <Link href="/login" className="text-primary hover:underline">
+          Already have an account? Login
+        </Link>
+      </div>
     </div>
   );
 }

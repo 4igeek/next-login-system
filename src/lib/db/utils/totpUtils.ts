@@ -14,14 +14,20 @@ const generateRandomCode = (): string => {
 
 // Create a new OTP
 export const createOTP = async (
-  userId: string,
+  identifier: string,
   type: "REGISTRATION" | "PASSWORD_RESET" | "EMAIL_VERIFICATION"
 ) => {
   const code = generateRandomCode();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
+  // Invalidate any existing OTPs for this identifier and type
+  await TOTP.updateMany(
+    { userId: identifier, type, used: false },
+    { used: true }
+  );
+
   const otp = await TOTP.create({
-    userId,
+    userId: identifier,
     code,
     type,
     expiresAt,
@@ -32,12 +38,12 @@ export const createOTP = async (
 
 // Verify an OTP
 export const verifyOTP = async (
-  userId: string,
+  identifier: string,
   code: string,
   type: "REGISTRATION" | "PASSWORD_RESET" | "EMAIL_VERIFICATION"
 ) => {
   const otp = await TOTP.findOne({
-    userId,
+    userId: identifier,
     code,
     type,
     used: false,
@@ -54,11 +60,11 @@ export const verifyOTP = async (
 
 // Check if user has any active OTPs
 export const hasActiveOTP = async (
-  userId: string,
+  identifier: string,
   type: "REGISTRATION" | "PASSWORD_RESET" | "EMAIL_VERIFICATION"
 ) => {
   const activeOTP = await TOTP.findOne({
-    userId,
+    userId: identifier,
     type,
     used: false,
     expiresAt: { $gt: new Date() },
@@ -69,12 +75,12 @@ export const hasActiveOTP = async (
 
 // Invalidate all OTPs for a user of a specific type
 export const invalidateUserOTPs = async (
-  userId: string,
+  identifier: string,
   type: "REGISTRATION" | "PASSWORD_RESET" | "EMAIL_VERIFICATION"
 ) => {
   await TOTP.updateMany(
     {
-      userId,
+      userId: identifier,
       type,
       used: false,
     },
