@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { validatePassword } from "@/lib/utils/passwordValidation";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -20,7 +21,16 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password is required"],
-    minlength: [6, "Password must be at least 6 characters long"],
+    validate: {
+      validator: function (password: string) {
+        const validation = validatePassword(password);
+        if (!validation.isValid) {
+          throw new Error(validation.errors.join(", "));
+        }
+        return true;
+      },
+      message: (props: any) => props.error,
+    },
   },
   createdAt: {
     type: Date,

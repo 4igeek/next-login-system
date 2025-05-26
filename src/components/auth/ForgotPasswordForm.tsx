@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { validatePassword } from "@/lib/utils/passwordValidation";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -20,6 +21,7 @@ export default function ForgotPasswordForm({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +52,14 @@ export default function ForgotPasswordForm({
     setIsLoading(true);
     setError("");
 
+    // Validate password
+    const validation = validatePassword(newPassword);
+    if (!validation.isValid) {
+      setError(validation.errors.join(", "));
+      setIsLoading(false);
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -79,6 +89,13 @@ export default function ForgotPasswordForm({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewPassword(value);
+    const validation = validatePassword(value);
+    setPasswordErrors(validation.errors);
   };
 
   if (step === "success") {
@@ -159,11 +176,29 @@ export default function ForgotPasswordForm({
               type="password"
               id="newPassword"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={handlePasswordChange}
               className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
               required
-              minLength={6}
             />
+            {newPassword && passwordErrors.length > 0 && (
+              <ul className="mt-2 text-sm text-destructive space-y-1">
+                {passwordErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            )}
+            {!newPassword && (
+              <div className="mt-2 text-sm text-muted-foreground">
+                Password must:
+                <ul className="list-disc list-inside space-y-1 mt-1">
+                  <li>Be at least 8 characters long</li>
+                  <li>Contain at least one uppercase letter</li>
+                  <li>Contain at least one lowercase letter</li>
+                  <li>Contain at least one number</li>
+                  <li>Contain at least one special character</li>
+                </ul>
+              </div>
+            )}
           </div>
           <div>
             <label
@@ -180,6 +215,11 @@ export default function ForgotPasswordForm({
               className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
               required
             />
+            {confirmPassword && newPassword !== confirmPassword && (
+              <p className="mt-2 text-sm text-destructive">
+                Passwords do not match
+              </p>
+            )}
           </div>
           <button
             type="submit"

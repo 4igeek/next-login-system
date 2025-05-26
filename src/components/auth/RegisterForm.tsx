@@ -7,6 +7,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { validatePassword } from "@/lib/utils/passwordValidation";
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -30,6 +31,7 @@ export default function RegisterForm({
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +62,13 @@ export default function RegisterForm({
     setIsLoading(true);
     setError("");
 
+    const validation = validatePassword(formData.password);
+    if (!validation.isValid) {
+      setError(validation.errors.join(", "));
+      setIsLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -83,8 +92,9 @@ export default function RegisterForm({
       }
 
       setStep("success");
-      onSuccess?.();
-      router.push("/dashboard");
+      setTimeout(() => {
+        onSwitchToLogin?.();
+      }, 1500);
       router.refresh();
     } catch (err) {
       setError("Registration failed. Please try again.");
@@ -96,6 +106,11 @@ export default function RegisterForm({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "password") {
+      const validation = validatePassword(value);
+      setPasswordErrors(validation.errors);
+    }
   };
 
   const handleOTPChange = (value: string) => {
@@ -216,8 +231,26 @@ export default function RegisterForm({
               onChange={handleChange}
               className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
               required
-              minLength={6}
             />
+            {formData.password && passwordErrors.length > 0 && (
+              <ul className="mt-2 text-sm text-destructive space-y-1">
+                {passwordErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            )}
+            {!formData.password && (
+              <div className="mt-2 text-sm text-muted-foreground">
+                Password must:
+                <ul className="list-disc list-inside space-y-1 mt-1">
+                  <li>Be at least 8 characters long</li>
+                  <li>Contain at least one uppercase letter</li>
+                  <li>Contain at least one lowercase letter</li>
+                  <li>Contain at least one number</li>
+                  <li>Contain at least one special character</li>
+                </ul>
+              </div>
+            )}
           </div>
           <div>
             <label
@@ -235,6 +268,12 @@ export default function RegisterForm({
               className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
               required
             />
+            {formData.confirmPassword &&
+              formData.password !== formData.confirmPassword && (
+                <p className="mt-2 text-sm text-destructive">
+                  Passwords do not match
+                </p>
+              )}
           </div>
           <button
             type="submit"
