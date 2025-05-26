@@ -13,10 +13,12 @@ interface AuthModalProps {
 }
 
 type AuthTab = "login" | "register";
+type ResetStep = "request" | "verify" | "verify-success" | "reset" | "success";
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<AuthTab>("login");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetStep, setResetStep] = useState<ResetStep>("request");
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -78,11 +80,13 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   >
                     <div className="w-full">
                       <h2 className="text-xl font-semibold mb-4 text-foreground">
-                        Reset Password
+                        {resetStep !== "verify-success" && "Reset Password"}
                       </h2>
                       <ForgotPasswordForm
                         onSuccess={onClose}
                         onBack={() => setShowForgotPassword(false)}
+                        step={resetStep}
+                        onStepChange={setResetStep}
                       />
                     </div>
                   </motion.div>
