@@ -37,34 +37,33 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="bg-card rounded-lg shadow-lg border border-border min-h-[370px]"
           >
-            {!showForgotPassword && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex border-b border-border"
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex border-b border-border"
+            >
+              <button
+                className={`flex-1 py-4 text-sm font-medium ${
+                  activeTab === "login"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setActiveTab("login")}
               >
-                <button
-                  className={`flex-1 py-4 text-sm font-medium ${
-                    activeTab === "login"
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                  onClick={() => setActiveTab("login")}
-                >
-                  Sign In
-                </button>
-                <button
-                  className={`flex-1 py-4 text-sm font-medium ${
-                    activeTab === "register"
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                  onClick={() => setActiveTab("register")}
-                >
-                  Create Account
-                </button>
-              </motion.div>
-            )}
+                Sign In
+              </button>
+              <button
+                className={`flex-1 py-4 text-sm font-medium ${
+                  activeTab === "register"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setActiveTab("register")}
+              >
+                Create Account
+              </button>
+            </motion.div>
 
             <div className="p-6 flex flex-col justify-center h-full w-full">
               <AnimatePresence mode="wait">

@@ -45,7 +45,7 @@ export default function NavBar() {
                 onClick={() => setIsAuthModalOpen(true)}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium"
               >
-                Join Us
+                Join / Sign In
               </button>
             )}
           </div>
