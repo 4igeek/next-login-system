@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { verifyOTP } from "@/lib/db/utils/totpUtils";
 import { connectDB } from "@/lib/db/connect";
 import User from "@/lib/db/models/User";
-import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
@@ -35,15 +34,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create new user with hashed password
+    // Create new user (password will be hashed by the User model's pre-save hook)
     const user = await User.create({
       email,
       username,
-      password: hashedPassword,
+      password,
     });
 
     return NextResponse.json({

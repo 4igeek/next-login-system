@@ -2,15 +2,48 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log("Login attempt:", { email, password });
+    setIsLoading(true);
+    setError("");
+
+    try {
+      console.log("Attempting to sign in with email:", email);
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      console.log("Sign in result:", result);
+
+      if (result?.error) {
+        console.error("Login error:", result.error);
+        setError(result.error);
+        return;
+      }
+
+      if (result?.ok) {
+        console.log("Login successful, redirecting to dashboard");
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err instanceof Error ? err.message : "Failed to login");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -18,6 +51,11 @@ export default function LoginForm() {
       <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
         Login
       </h2>
+      {error && (
+        <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
@@ -53,22 +91,17 @@ export default function LoginForm() {
         </div>
         <button
           type="submit"
-          className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors"
+          disabled={isLoading}
+          className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
-          Login
+          {isLoading ? "Logging in..." : "Login"}
         </button>
-        <div className="text-center space-x-4 text-sm">
-          <Link href="/register" className="text-primary hover:underline">
-            Register
-          </Link>
-          <Link
-            href="/forgot-password"
-            className="text-primary hover:underline"
-          >
-            Forgot Password?
-          </Link>
-        </div>
       </form>
+      <div className="text-center text-sm mt-4">
+        <Link href="/register" className="text-primary hover:underline">
+          Don't have an account? Register
+        </Link>
+      </div>
     </div>
   );
 }
