@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
+import { motion, AnimatePresence } from "framer-motion";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
@@ -19,59 +20,101 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/30"
+        aria-hidden="true"
+      />
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-md bg-card rounded-lg shadow-lg border border-border">
-          {!showForgotPassword && (
-            <div className="flex border-b border-border">
-              <button
-                className={`flex-1 py-4 text-sm font-medium ${
-                  activeTab === "login"
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setActiveTab("login")}
+        <Dialog.Panel className="w-full max-w-md">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="bg-card rounded-lg shadow-lg border border-border min-h-[370px]"
+          >
+            {!showForgotPassword && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex border-b border-border"
               >
-                Sign In
-              </button>
-              <button
-                className={`flex-1 py-4 text-sm font-medium ${
-                  activeTab === "register"
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setActiveTab("register")}
-              >
-                Create Account
-              </button>
-            </div>
-          )}
-
-          <div className="p-6">
-            {showForgotPassword ? (
-              <>
-                <h2 className="text-xl font-semibold mb-4 text-foreground">
-                  Reset Password
-                </h2>
-                <ForgotPasswordForm
-                  onSuccess={onClose}
-                  onBack={() => setShowForgotPassword(false)}
-                />
-              </>
-            ) : activeTab === "login" ? (
-              <LoginForm
-                onSuccess={onClose}
-                onForgotPassword={() => setShowForgotPassword(true)}
-                onSwitchToRegister={() => setActiveTab("register")}
-              />
-            ) : (
-              <RegisterForm
-                onSuccess={onClose}
-                onSwitchToLogin={() => setActiveTab("login")}
-              />
+                <button
+                  className={`flex-1 py-4 text-sm font-medium ${
+                    activeTab === "login"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={() => setActiveTab("login")}
+                >
+                  Sign In
+                </button>
+                <button
+                  className={`flex-1 py-4 text-sm font-medium ${
+                    activeTab === "register"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={() => setActiveTab("register")}
+                >
+                  Create Account
+                </button>
+              </motion.div>
             )}
-          </div>
+
+            <div className="p-6">
+              <AnimatePresence mode="wait">
+                {showForgotPassword ? (
+                  <motion.div
+                    key="forgot-password"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ type: "spring", duration: 0.3 }}
+                  >
+                    <h2 className="text-xl font-semibold mb-4 text-foreground">
+                      Reset Password
+                    </h2>
+                    <ForgotPasswordForm
+                      onSuccess={onClose}
+                      onBack={() => setShowForgotPassword(false)}
+                    />
+                  </motion.div>
+                ) : activeTab === "login" ? (
+                  <motion.div
+                    key="login"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ type: "spring", duration: 0.3 }}
+                  >
+                    <LoginForm
+                      onSuccess={onClose}
+                      onForgotPassword={() => setShowForgotPassword(true)}
+                      onSwitchToRegister={() => setActiveTab("register")}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="register"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ type: "spring", duration: 0.3 }}
+                  >
+                    <RegisterForm
+                      onSuccess={onClose}
+                      onSwitchToLogin={() => setActiveTab("login")}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
         </Dialog.Panel>
       </div>
     </Dialog>
