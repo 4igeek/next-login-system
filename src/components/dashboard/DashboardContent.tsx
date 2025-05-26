@@ -19,7 +19,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ callbackUrl: "/" })}
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
           >
             Sign Out
@@ -52,7 +52,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
               management.
             </p>
             <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => signOut({ callbackUrl: "/" })}
               className="text-sm text-red-400 hover:text-red-300 transition-colors"
             >
               Sign out from all devices
