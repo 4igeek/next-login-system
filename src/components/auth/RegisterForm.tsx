@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 type RegistrationStep = "email" | "details" | "success";
 
@@ -23,7 +28,6 @@ export default function RegisterForm() {
     setError("");
 
     try {
-      // TODO: Call API to send OTP
       const response = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,7 +58,6 @@ export default function RegisterForm() {
     }
 
     try {
-      // TODO: Call API to verify OTP and create account
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -81,6 +84,10 @@ export default function RegisterForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleOTPChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, otp: value }));
   };
 
   if (step === "success") {
@@ -165,17 +172,22 @@ export default function RegisterForm() {
             >
               Verification Code
             </label>
-            <input
-              type="text"
-              id="otp"
-              name="otp"
-              value={formData.otp}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
-              required
-              pattern="[0-9]{6}"
-              maxLength={6}
-            />
+            <div className="flex justify-center">
+              <InputOTP
+                maxLength={6}
+                value={formData.otp}
+                onChange={handleOTPChange}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
           </div>
           <div>
             <label
