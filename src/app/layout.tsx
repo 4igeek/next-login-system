@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { Figtree } from "next/font/google";
 import "./globals.css";
+import NavBar from "@/components/NavBar";
 
 const figtree = Figtree({
   subsets: ["latin"],
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${figtree.variable} antialiased`}>
         <Providers>
+          <NavBar />
           <main>{children}</main>
         </Providers>
       </body>
