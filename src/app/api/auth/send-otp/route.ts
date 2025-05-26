@@ -23,8 +23,14 @@ export async function POST(request: Request) {
       );
     }
 
+    console.log("Creating registration OTP for:", email);
     // Create OTP using email as identifier for registration
     const otp = await createOTP(email, "REGISTRATION");
+    console.log("Created registration OTP:", {
+      email,
+      type: "REGISTRATION",
+      code: otp.code,
+    });
 
     // Send OTP via email
     const emailResult = await sendEmail({

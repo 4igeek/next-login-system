@@ -20,18 +20,18 @@ export const createOTP = async (
   const code = generateRandomCode();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-  // Invalidate any existing OTPs for this identifier and type
-  await TOTP.updateMany(
-    { userId: identifier, type, used: false },
-    { used: true }
-  );
+  // Delete ALL existing OTPs for this identifier and type
+  await TOTP.deleteMany({ userId: identifier, type });
 
+  // Create new OTP
   const otp = await TOTP.create({
     userId: identifier,
     code,
     type,
     expiresAt,
   });
+
+  console.log("Created new OTP:", { userId: identifier, type, code });
 
   return otp;
 };
@@ -42,6 +42,8 @@ export const verifyOTP = async (
   code: string,
   type: "REGISTRATION" | "PASSWORD_RESET" | "EMAIL_VERIFICATION"
 ) => {
+  console.log("Verifying OTP:", { identifier, code, type });
+
   const otp = await TOTP.findOne({
     userId: identifier,
     code,
@@ -50,10 +52,40 @@ export const verifyOTP = async (
     expiresAt: { $gt: new Date() },
   });
 
-  if (!otp) return false;
+  console.log("Found OTP:", otp);
+
+  if (!otp) {
+    // Check if OTP exists but is used
+    const usedOTP = await TOTP.findOne({
+      userId: identifier,
+      code,
+      type,
+      used: true,
+    });
+    if (usedOTP) {
+      console.log("OTP was already used");
+      return false;
+    }
+
+    // Check if OTP exists but is expired
+    const expiredOTP = await TOTP.findOne({
+      userId: identifier,
+      code,
+      type,
+      expiresAt: { $lte: new Date() },
+    });
+    if (expiredOTP) {
+      console.log("OTP is expired");
+      return false;
+    }
+
+    console.log("No matching OTP found");
+    return false;
+  }
 
   otp.used = true;
   await otp.save();
+  console.log("OTP verified successfully");
 
   return true;
 };

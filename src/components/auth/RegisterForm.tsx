@@ -14,7 +14,7 @@ interface RegisterFormProps {
   onSwitchToLogin?: () => void;
 }
 
-type RegistrationStep = "email" | "details" | "success";
+type RegistrationStep = "email" | "otp" | "details" | "success";
 
 export default function RegisterForm({
   onSuccess,
@@ -38,6 +38,7 @@ export default function RegisterForm({
     setIsLoading(true);
     setError("");
 
+    console.log("Sending registration OTP request for:", email);
     try {
       const response = await fetch("/api/auth/send-otp", {
         method: "POST",
@@ -45,13 +46,60 @@ export default function RegisterForm({
         body: JSON.stringify({ email }),
       });
 
+      const data = await response.json();
+      console.log("Registration OTP response:", data);
+
       if (!response.ok) {
-        throw new Error("Failed to send OTP");
+        throw new Error(data.error || "Failed to send OTP");
+      }
+
+      setStep("otp");
+    } catch (err) {
+      console.error("Registration OTP error:", err);
+      setError("Failed to send OTP. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    if (formData.otp.length !== 6) {
+      setError("Please enter a complete 6-digit verification code");
+      setIsLoading(false);
+      return;
+    }
+
+    console.log("Verifying registration OTP:", { email, otp: formData.otp });
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          otp: formData.otp,
+          type: "REGISTRATION",
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Registration OTP verification response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Invalid verification code");
       }
 
       setStep("details");
     } catch (err) {
-      setError("Failed to send OTP. Please try again.");
+      console.error("Registration OTP verification error:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Invalid verification code. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +187,11 @@ export default function RegisterForm({
   return (
     <div className="w-full max-w-md mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
-        {step === "email" ? "Start Registration" : "Complete Registration"}
+        {step === "email"
+          ? "Start Registration"
+          : step === "otp"
+          ? "Verify Email"
+          : "Complete Registration"}
       </h2>
       {error && (
         <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm">
@@ -172,26 +224,8 @@ export default function RegisterForm({
             {isLoading ? "Sending..." : "Send Verification Code"}
           </button>
         </form>
-      ) : (
-        <form onSubmit={handleDetailsSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium mb-1 text-foreground"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
-              required
-              minLength={3}
-            />
-          </div>
+      ) : step === "otp" ? (
+        <form onSubmit={handleOTPSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="otp"
@@ -216,6 +250,44 @@ export default function RegisterForm({
               </InputOTP>
             </div>
           </div>
+          <div className="flex flex-col gap-2">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {isLoading ? "Verifying..." : "Verify Code"}
+            </button>
+            <button
+              type="button"
+              onClick={handleEmailSubmit}
+              disabled={isLoading}
+              className="w-full text-primary hover:underline text-sm"
+            >
+              Didn't receive the code? Resend
+            </button>
+          </div>
+        </form>
+      ) : (
+        <form onSubmit={handleDetailsSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium mb-1 text-foreground"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
+              required
+              minLength={3}
+            />
+          </div>
           <div>
             <label
               htmlFor="password"
@@ -232,24 +304,12 @@ export default function RegisterForm({
               className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
               required
             />
-            {formData.password && passwordErrors.length > 0 && (
-              <ul className="mt-2 text-sm text-destructive space-y-1">
+            {passwordErrors.length > 0 && (
+              <ul className="mt-1 text-sm text-destructive">
                 {passwordErrors.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
               </ul>
-            )}
-            {!formData.password && (
-              <div className="mt-2 text-sm text-muted-foreground">
-                Password must:
-                <ul className="list-disc list-inside space-y-1 mt-1">
-                  <li>Be at least 8 characters long</li>
-                  <li>Contain at least one uppercase letter</li>
-                  <li>Contain at least one lowercase letter</li>
-                  <li>Contain at least one number</li>
-                  <li>Contain at least one special character</li>
-                </ul>
-              </div>
             )}
           </div>
           <div>
@@ -268,19 +328,13 @@ export default function RegisterForm({
               className="w-full p-2 border rounded-md bg-background text-foreground border-input focus:outline-none focus:ring-2 focus:ring-primary/50"
               required
             />
-            {formData.confirmPassword &&
-              formData.password !== formData.confirmPassword && (
-                <p className="mt-2 text-sm text-destructive">
-                  Passwords do not match
-                </p>
-              )}
           </div>
           <button
             type="submit"
             disabled={isLoading}
             className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            {isLoading ? "Creating Account..." : "Create Account"}
+            {isLoading ? "Registering..." : "Register"}
           </button>
         </form>
       )}

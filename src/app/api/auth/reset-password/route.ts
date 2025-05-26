@@ -25,8 +25,14 @@ export async function POST(request: Request) {
       });
     }
 
+    console.log("Creating password reset OTP for:", email);
     // Create OTP for password reset
     const otp = await createOTP(email, "PASSWORD_RESET");
+    console.log("Created password reset OTP:", {
+      email,
+      type: "PASSWORD_RESET",
+      code: otp.code,
+    });
 
     // Send reset email
     await sendEmail({

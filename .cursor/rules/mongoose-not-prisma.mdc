@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+I am using mongoose in this project so please look through the project to inform yourself on how I am connecting to the database. I am not using prisma.
