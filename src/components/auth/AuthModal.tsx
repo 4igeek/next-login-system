@@ -28,7 +28,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         aria-hidden="true"
       />
 
-      <div className="fixed inset-0 flex items-center justify-center p-4">
+      <div className="fixed inset-0 min-h-screen flex items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-md">
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -66,7 +66,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </motion.div>
             )}
 
-            <div className="p-6">
+            <div className="p-6 flex flex-col justify-center h-full w-full">
               <AnimatePresence mode="wait">
                 {showForgotPassword ? (
                   <motion.div
@@ -75,14 +75,17 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ type: "spring", duration: 0.3 }}
+                    className="flex items-center justify-center h-full w-full"
                   >
-                    <h2 className="text-xl font-semibold mb-4 text-foreground">
-                      Reset Password
-                    </h2>
-                    <ForgotPasswordForm
-                      onSuccess={onClose}
-                      onBack={() => setShowForgotPassword(false)}
-                    />
+                    <div className="w-full">
+                      <h2 className="text-xl font-semibold mb-4 text-foreground">
+                        Reset Password
+                      </h2>
+                      <ForgotPasswordForm
+                        onSuccess={onClose}
+                        onBack={() => setShowForgotPassword(false)}
+                      />
+                    </div>
                   </motion.div>
                 ) : activeTab === "login" ? (
                   <motion.div
@@ -91,12 +94,15 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ type: "spring", duration: 0.3 }}
+                    className="flex items-center justify-center h-full w-full"
                   >
-                    <LoginForm
-                      onSuccess={onClose}
-                      onForgotPassword={() => setShowForgotPassword(true)}
-                      onSwitchToRegister={() => setActiveTab("register")}
-                    />
+                    <div className="w-full">
+                      <LoginForm
+                        onSuccess={onClose}
+                        onForgotPassword={() => setShowForgotPassword(true)}
+                        onSwitchToRegister={() => setActiveTab("register")}
+                      />
+                    </div>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -105,11 +111,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ type: "spring", duration: 0.3 }}
+                    className="flex items-center justify-center h-full w-full"
                   >
-                    <RegisterForm
-                      onSuccess={onClose}
-                      onSwitchToLogin={() => setActiveTab("login")}
-                    />
+                    <div className="w-full">
+                      <RegisterForm
+                        onSuccess={onClose}
+                        onSwitchToLogin={() => setActiveTab("login")}
+                      />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
