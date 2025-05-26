@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+interface ForgotPasswordFormProps {
+  onSuccess?: () => void;
+  onBack?: () => void;
+}
 
 type ResetStep = "request" | "verify" | "success";
 
-export default function ForgotPasswordForm() {
-  const router = useRouter();
+export default function ForgotPasswordForm({
+  onSuccess,
+  onBack,
+}: ForgotPasswordFormProps) {
   const [step, setStep] = useState<ResetStep>("request");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -68,6 +73,7 @@ export default function ForgotPasswordForm() {
       }
 
       setStep("success");
+      onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to reset password");
     } finally {
@@ -81,18 +87,15 @@ export default function ForgotPasswordForm() {
         <p className="mb-4 text-foreground">
           Your password has been reset successfully.
         </p>
-        <Link href="/login" className="text-primary hover:underline">
+        <button onClick={onBack} className="text-primary hover:underline">
           Return to Login
-        </Link>
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
-        Reset Password
-      </h2>
+    <div className="w-full">
       {error && (
         <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm">
           {error}
@@ -188,9 +191,9 @@ export default function ForgotPasswordForm() {
         </form>
       )}
       <div className="text-center text-sm mt-4">
-        <Link href="/login" className="text-primary hover:underline">
+        <button onClick={onBack} className="text-primary hover:underline">
           Back to Login
-        </Link>
+        </button>
       </div>
     </div>
   );

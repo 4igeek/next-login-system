@@ -1,16 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
+interface RegisterFormProps {
+  onSuccess?: () => void;
+  onSwitchToLogin?: () => void;
+}
+
 type RegistrationStep = "email" | "details" | "success";
 
-export default function RegisterForm() {
+export default function RegisterForm({
+  onSuccess,
+  onSwitchToLogin,
+}: RegisterFormProps) {
+  const router = useRouter();
   const [step, setStep] = useState<RegistrationStep>("email");
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -74,6 +83,9 @@ export default function RegisterForm() {
       }
 
       setStep("success");
+      onSuccess?.();
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       setError("Registration failed. Please try again.");
     } finally {
@@ -99,12 +111,12 @@ export default function RegisterForm() {
         <p className="text-foreground">
           Your account has been created successfully.
         </p>
-        <Link
-          href="/login"
+        <button
+          onClick={onSuccess}
           className="inline-block bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
         >
-          Proceed to Login
-        </Link>
+          Continue
+        </button>
       </div>
     );
   }
@@ -234,9 +246,12 @@ export default function RegisterForm() {
         </form>
       )}
       <div className="text-center text-sm mt-4">
-        <Link href="/login" className="text-primary hover:underline">
+        <button
+          onClick={onSwitchToLogin}
+          className="text-primary hover:underline"
+        >
           Already have an account? Login
-        </Link>
+        </button>
       </div>
     </div>
   );

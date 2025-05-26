@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { useState } from "react";
+import AuthModal from "./auth/AuthModal";
 
 export default function NavBar() {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
     <nav className="bg-zinc-800 border-b border-zinc-700">
@@ -38,24 +41,20 @@ export default function NavBar() {
                 </button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-zinc-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Register
-                </Link>
-              </>
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Join Us
+              </button>
             )}
           </div>
         </div>
       </div>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </nav>
   );
 }

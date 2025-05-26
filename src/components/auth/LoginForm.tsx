@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-export default function LoginForm() {
+interface LoginFormProps {
+  onSuccess?: () => void;
+  onForgotPassword?: () => void;
+  onSwitchToRegister?: () => void;
+}
+
+export default function LoginForm({
+  onSuccess,
+  onForgotPassword,
+  onSwitchToRegister,
+}: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,6 +44,7 @@ export default function LoginForm() {
 
       if (result?.ok) {
         console.log("Login successful, redirecting to dashboard");
+        onSuccess?.();
         router.push("/dashboard");
         router.refresh();
       }
@@ -47,10 +57,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6 text-center text-foreground">
-        Login
-      </h2>
+    <div className="w-full">
       {error && (
         <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm">
           {error}
@@ -81,12 +88,13 @@ export default function LoginForm() {
             >
               Password
             </label>
-            <Link
-              href="/forgot-password"
+            <button
+              type="button"
+              onClick={onForgotPassword}
               className="text-sm text-primary hover:underline"
             >
               Forgot Password?
-            </Link>
+            </button>
           </div>
           <input
             type="password"
@@ -106,9 +114,12 @@ export default function LoginForm() {
         </button>
       </form>
       <div className="text-center text-sm mt-4">
-        <Link href="/register" className="text-primary hover:underline">
+        <button
+          onClick={onSwitchToRegister}
+          className="text-primary hover:underline"
+        >
           Don't have an account? Register
-        </Link>
+        </button>
       </div>
     </div>
   );
