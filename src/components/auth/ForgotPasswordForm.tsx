@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { validatePassword } from "@/lib/utils/passwordValidation";
 import { Input } from "@/components/ui/input";
+import { CheckCircle2 } from "lucide-react";
 import {
   InputOTP,
   InputOTPGroup,
@@ -14,7 +15,7 @@ interface ForgotPasswordFormProps {
   onBack?: () => void;
 }
 
-type ResetStep = "request" | "verify" | "reset" | "success";
+type ResetStep = "request" | "verify" | "verify-success" | "reset" | "success";
 
 export default function ForgotPasswordForm({
   onSuccess,
@@ -62,14 +63,18 @@ export default function ForgotPasswordForm({
       const response = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ email, otp, type: "PASSWORD_RESET" }),
       });
 
       if (!response.ok) {
         throw new Error("Invalid verification code");
       }
 
-      setStep("reset");
+      setStep("verify-success");
+      // Automatically proceed to reset step after 1.5 seconds
+      setTimeout(() => {
+        setStep("reset");
+      }, 1500);
     } catch (err) {
       setError("Invalid verification code. Please try again.");
     } finally {
@@ -127,6 +132,19 @@ export default function ForgotPasswordForm({
     const validation = validatePassword(value);
     setPasswordErrors(validation.errors);
   };
+
+  if (step === "verify-success") {
+    return (
+      <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <CheckCircle2 className="w-12 h-12 text-green-600" />
+        </div>
+        <h3 className="text-xl font-semibold text-green-600">
+          Code Verified Successfully!
+        </h3>
+      </div>
+    );
+  }
 
   if (step === "success") {
     return (
