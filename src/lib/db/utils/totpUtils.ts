@@ -43,7 +43,15 @@ export const verifyOTP = async (
   code: string,
   type: "REGISTRATION" | "PASSWORD_RESET" | "EMAIL_VERIFICATION"
 ) => {
-  console.log("Verifying OTP:", { identifier, code, type });
+  console.log("\n🔍 [OTP VERIFICATION START] =====================");
+  console.log("📝 Input details:", { 
+    identifier, 
+    code, 
+    type,
+    codeLength: code.length,
+    codeType: typeof code,
+    timestamp: new Date().toISOString()
+  });
 
   const otp = await TOTP.findOne({
     userId: identifier,
@@ -53,7 +61,17 @@ export const verifyOTP = async (
     expiresAt: { $gt: new Date() },
   });
 
-  console.log("Found OTP:", otp);
+  console.log("🔎 Database query result:", {
+    found: !!otp,
+    otpDetails: otp ? {
+      userId: otp.userId,
+      code: otp.code,
+      type: otp.type,
+      used: otp.used,
+      expiresAt: otp.expiresAt,
+      createdAt: otp.createdAt
+    } : null
+  });
 
   if (!otp) {
     // Check if OTP exists but is used
@@ -64,7 +82,15 @@ export const verifyOTP = async (
       used: true,
     });
     if (usedOTP) {
-      console.log("OTP was already used");
+      console.log("❌ OTP was already used:", {
+        userId: usedOTP.userId,
+        code: usedOTP.code,
+        type: usedOTP.type,
+        used: usedOTP.used,
+        expiresAt: usedOTP.expiresAt,
+        createdAt: usedOTP.createdAt
+      });
+      console.log("🔍 [OTP VERIFICATION END] =====================\n");
       return false;
     }
 
@@ -76,17 +102,27 @@ export const verifyOTP = async (
       expiresAt: { $lte: new Date() },
     });
     if (expiredOTP) {
-      console.log("OTP is expired");
+      console.log("⏰ OTP is expired:", {
+        userId: expiredOTP.userId,
+        code: expiredOTP.code,
+        type: expiredOTP.type,
+        used: expiredOTP.used,
+        expiresAt: expiredOTP.expiresAt,
+        createdAt: expiredOTP.createdAt
+      });
+      console.log("🔍 [OTP VERIFICATION END] =====================\n");
       return false;
     }
 
-    console.log("No matching OTP found");
+    console.log("❌ No matching OTP found for:", { identifier, code, type });
+    console.log("🔍 [OTP VERIFICATION END] =====================\n");
     return false;
   }
 
   otp.used = true;
   await otp.save();
-  console.log("OTP verified successfully");
+  console.log("✅ OTP verified successfully");
+  console.log("🔍 [OTP VERIFICATION END] =====================\n");
 
   return true;
 };

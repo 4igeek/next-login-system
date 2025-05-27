@@ -36,6 +36,12 @@ export default function ForgotPasswordForm({
     setIsLoading(true);
     setError("");
 
+    if (!email) {
+      setError("Please enter your email address");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
@@ -61,7 +67,14 @@ export default function ForgotPasswordForm({
     setIsLoading(true);
     setError("");
 
+    if (!email) {
+      setError("Email is missing. Please start over.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      console.log("Verifying OTP with email:", email); // Debug log
       const response = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
