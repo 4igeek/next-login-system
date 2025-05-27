@@ -30,7 +30,7 @@ const totpSchema = new mongoose.Schema({
 
 // Index for faster queries and automatic expiration
 totpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
-totpSchema.index({ userId: 1, type: 1 });
+totpSchema.index({ userId: 1, type: 1 }, { unique: true });
 
 // Force model recreation to ensure schema update
 const modelName = "TOTP";

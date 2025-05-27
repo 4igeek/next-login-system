@@ -20,18 +20,19 @@ export const createOTP = async (
   const code = generateRandomCode();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-  // Delete ALL existing OTPs for this identifier and type
-  await TOTP.deleteMany({ userId: identifier, type });
+  // Update existing OTP or create new one if it doesn't exist
+  const otp = await TOTP.findOneAndUpdate(
+    { userId: identifier, type },
+    {
+      code,
+      expiresAt,
+      used: false,
+      createdAt: new Date(),
+    },
+    { upsert: true, new: true }
+  );
 
-  // Create new OTP
-  const otp = await TOTP.create({
-    userId: identifier,
-    code,
-    type,
-    expiresAt,
-  });
-
-  console.log("Created new OTP:", { userId: identifier, type, code });
+  console.log("Created/Updated OTP:", { userId: identifier, type, code });
 
   return otp;
 };

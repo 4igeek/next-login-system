@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db/connect";
 import User from "@/lib/db/models/User";
 import { createOTP, verifyOTP } from "@/lib/db/utils/totpUtils";
 import { sendEmail } from "@/lib/sendgrid";
+import { invalidateUserOTPs } from "@/lib/db/utils/totpUtils";
 
 // Request password reset
 export async function POST(request: Request) {
@@ -68,25 +69,16 @@ export async function POST(request: Request) {
 // Update password with OTP
 export async function PUT(request: Request) {
   try {
-    const { email, otp, newPassword } = await request.json();
+    const { email, newPassword } = await request.json();
 
-    if (!email || !otp || !newPassword) {
+    if (!email || !newPassword) {
       return NextResponse.json(
-        { error: "Email, OTP, and new password are required" },
+        { error: "Email and new password are required" },
         { status: 400 }
       );
     }
 
     await connectDB();
-
-    // Verify OTP
-    const isValidOTP = await verifyOTP(email, otp, "PASSWORD_RESET");
-    if (!isValidOTP) {
-      return NextResponse.json(
-        { error: "Invalid or expired OTP" },
-        { status: 400 }
-      );
-    }
 
     // Find user and update password
     const user = await User.findOne({ email });
@@ -97,6 +89,9 @@ export async function PUT(request: Request) {
     // Update password (will be hashed by User model's pre-save hook)
     user.password = newPassword;
     await user.save();
+
+    // Invalidate any existing password reset OTPs for this user
+    await invalidateUserOTPs(email, "PASSWORD_RESET");
 
     return NextResponse.json({
       message: "Password has been reset successfully",

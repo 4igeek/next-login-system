@@ -110,7 +110,6 @@ export default function ForgotPasswordForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          otp,
           newPassword,
         }),
       });
@@ -121,7 +120,6 @@ export default function ForgotPasswordForm({
       }
 
       onStepChange("success");
-      onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to reset password");
     } finally {
