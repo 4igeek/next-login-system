@@ -131,21 +131,20 @@ export default function RegisterForm({
           email,
           username: formData.username,
           password: formData.password,
-          otp: formData.otp,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Registration failed");
+        const data = await response.json();
+        throw new Error(data.error || "Registration failed");
       }
 
       setStep("success");
       setTimeout(() => {
         onSwitchToLogin?.();
       }, 1500);
-      router.refresh();
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

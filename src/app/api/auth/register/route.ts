@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { verifyOTP } from "@/lib/db/utils/totpUtils";
 import { connectDB } from "@/lib/db/connect";
 import User from "@/lib/db/models/User";
 
 export async function POST(request: Request) {
   try {
-    const { email, username, password, otp } = await request.json();
+    const { email, username, password } = await request.json();
 
-    if (!email || !username || !password || !otp) {
+    if (!email || !username || !password) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -15,15 +14,6 @@ export async function POST(request: Request) {
     }
 
     await connectDB();
-
-    // Verify OTP
-    const isValidOTP = await verifyOTP(email, otp, "REGISTRATION");
-    if (!isValidOTP) {
-      return NextResponse.json(
-        { error: "Invalid or expired OTP" },
-        { status: 400 }
-      );
-    }
 
     // Check if username is already taken
     const existingUsername = await User.findOne({ username });
