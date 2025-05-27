@@ -14,7 +14,7 @@ interface DashboardContentProps {
 
 export default function DashboardContent({ user }: DashboardContentProps) {
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-[63vw] mx-auto">
       <div className="bg-zinc-800 rounded-lg shadow-lg p-6 mb-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>

@@ -22,7 +22,7 @@ export default function RootLayout({
         <Providers>
           <div className="min-h-screen bg-background">
             <NavBar />
-            <main>{children}</main>
+            {children}
           </div>
         </Providers>
       </body>
