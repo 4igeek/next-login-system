@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
 import { useState } from "react";
 import AuthModal from "./auth/AuthModal";
 
 export default function NavBar() {
   const { data: session } = useSession();
-  const { theme, setTheme } = useTheme();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (

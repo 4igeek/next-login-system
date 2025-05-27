@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
 import User from "@/lib/db/models/User";
-import { createOTP, verifyOTP } from "@/lib/db/utils/totpUtils";
+import { createOTP } from "@/lib/db/utils/totpUtils";
 import { sendEmail } from "@/lib/sendgrid";
 import { invalidateUserOTPs } from "@/lib/db/utils/totpUtils";
 

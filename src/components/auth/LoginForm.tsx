@@ -118,7 +118,7 @@ export default function LoginForm({
           onClick={onSwitchToRegister}
           className="text-primary hover:underline"
         >
-          Don't have an account? Register
+          Need an account? Register
         </button>
       </div>
     </div>

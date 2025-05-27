@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { validatePassword } from "@/lib/utils/passwordValidation";
-import { Input } from "@/components/ui/input";
 import { CheckCircle2 } from "lucide-react";
 import {
   InputOTP,
@@ -20,7 +19,6 @@ interface ForgotPasswordFormProps {
 type ResetStep = "request" | "verify" | "verify-success" | "reset" | "success";
 
 export default function ForgotPasswordForm({
-  onSuccess,
   onBack,
   step,
   onStepChange,
@@ -51,6 +49,7 @@ export default function ForgotPasswordForm({
 
       onStepChange("verify");
     } catch (err) {
+      console.error(err);
       setError("Failed to request password reset. Please try again.");
     } finally {
       setIsLoading(false);
@@ -79,6 +78,7 @@ export default function ForgotPasswordForm({
         onStepChange("reset");
       }, 1500);
     } catch (err) {
+      console.error(err);
       setError("Invalid verification code. Please try again.");
     } finally {
       setIsLoading(false);

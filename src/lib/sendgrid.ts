@@ -37,18 +37,18 @@ export async function sendEmail({ to, subject, text, html }: EmailOptions) {
 
     const response = await sgMail.send(msg);
     return { success: true, response };
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("Error sending email:", {
-      message: error.message,
-      code: error.code,
-      response: error.response?.body,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      code: error instanceof Error ? (error as { code?: string }).code : undefined,
+      response: error instanceof Error ? (error as { response?: { body?: unknown } }).response?.body : undefined,
     });
     return {
       success: false,
       error: {
-        message: error.message,
-        code: error.code,
-        details: error.response?.body,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: error instanceof Error ? (error as { code?: string }).code : undefined,
+        details: error instanceof Error ? (error as { response?: { body?: unknown } }).response?.body : undefined,
       },
     };
   }

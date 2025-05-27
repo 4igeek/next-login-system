@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   InputOTP,
   InputOTPGroup,
@@ -20,7 +19,6 @@ export default function RegisterForm({
   onSuccess,
   onSwitchToLogin,
 }: RegisterFormProps) {
-  const router = useRouter();
   const [step, setStep] = useState<RegistrationStep>("email");
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -263,7 +261,7 @@ export default function RegisterForm({
               disabled={isLoading}
               className="w-full text-primary hover:underline text-sm"
             >
-              Didn't receive the code? Resend
+              Need a new code? Resend
             </button>
           </div>
         </form>

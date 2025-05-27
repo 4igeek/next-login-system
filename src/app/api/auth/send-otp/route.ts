@@ -62,10 +62,11 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: "Verification code sent successfully",
     });
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("Error in send-otp route:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to send verification code";
     return NextResponse.json(
-      { error: error.message || "Failed to send verification code" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
