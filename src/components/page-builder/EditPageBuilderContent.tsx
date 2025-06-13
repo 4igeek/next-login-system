@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDrop } from "react-dnd";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { BuilderElement } from "@/components/page-builder/types";
 
 type Props = {};
@@ -21,11 +22,15 @@ const EditPageBuilderContent = (props: Props) => {
     }),
   }));
 
+  const removeElement = (index: number) => {
+    setElements((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <div
       ref={dropRef as unknown as React.RefObject<HTMLDivElement>}
       className={`w-full h-full p-4 ${
-        isOver ? "bg-gray-100" : ""
+        isOver ? "bg-gray-800" : ""
       } transition-colors duration-150`}
     >
       {elements.length === 0 ? (
@@ -37,8 +42,15 @@ const EditPageBuilderContent = (props: Props) => {
           {elements.map((element, index) => (
             <div
               key={`${element.id}-${index}`}
-              className="p-4 border rounded bg-white"
+              className="p-4 border border-gray-700 rounded bg-gray-800 relative group"
             >
+              <button
+                onClick={() => removeElement(index)}
+                className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                title="Remove element"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
               {element.label}
             </div>
           ))}
