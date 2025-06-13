@@ -1,0 +1,76 @@
+{
+  "rowElements": [
+    {
+      "id": "row",
+      "label": "Row",
+      "icon": "RectangleStackIcon",
+      "type": "layout"
+    }
+  ],
+  "columnElements": [
+    {
+      "id": "two-columns",
+      "label": "2 Cols",
+      "icon": "Square2StackIcon",
+      "type": "layout"
+    },
+    {
+      "id": "three-columns",
+      "label": "3 Cols",
+      "icon": "Square3Stack3DIcon",
+      "type": "layout"
+    }
+  ],
+  "textElements": [
+    {
+      "id": "paragraph",
+      "label": "Paragraph",
+      "icon": "DocumentTextIcon",
+      "type": "text"
+    },
+    {
+      "id": "image",
+      "label": "Image",
+      "icon": "PhotoIcon",
+      "type": "media"
+    }
+  ],
+  "headingElements": [
+    {
+      "id": "h1",
+      "label": "H1",
+      "icon": "HashtagIcon",
+      "type": "heading"
+    },
+    {
+      "id": "h2",
+      "label": "H2",
+      "icon": "HashtagIcon",
+      "type": "heading"
+    },
+    {
+      "id": "h3",
+      "label": "H3",
+      "icon": "HashtagIcon",
+      "type": "heading"
+    },
+    {
+      "id": "h4",
+      "label": "H4",
+      "icon": "HashtagIcon",
+      "type": "heading"
+    },
+    {
+      "id": "h5",
+      "label": "H5",
+      "icon": "HashtagIcon",
+      "type": "heading"
+    },
+    {
+      "id": "h6",
+      "label": "H6",
+      "icon": "HashtagIcon",
+      "type": "heading"
+    }
+  ]
+} 
