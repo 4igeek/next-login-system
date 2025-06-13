@@ -7,7 +7,7 @@ import NavBar from "@/components/NavBar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Next.js Login System",
+  title: "Next.js Page Builder",
   description: "A secure login system built with Next.js",
 };
 

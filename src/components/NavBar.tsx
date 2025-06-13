@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 import AuthModal from "./auth/AuthModal";
+import { Plus, LayoutDashboard } from "lucide-react";
 
 export default function NavBar() {
   const { data: session } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
-    <nav className="bg-zinc-800 border-b border-zinc-700">
+    <nav className="bg-zinc-800 border-b border-zinc-700 h-[4rem]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -26,10 +27,16 @@ export default function NavBar() {
             {session ? (
               <>
                 <Link
-                  href="/dashboard"
-                  className="text-zinc-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                  href="/new-post"
+                  className="text-zinc-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1"
                 >
-                  Dashboard
+                  <Plus size={16} /> New Post
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="text-zinc-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1"
+                >
+                  <LayoutDashboard size={16} /> Dashboard
                 </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
