@@ -9,15 +9,51 @@
   ],
   "columnElements": [
     {
-      "id": "two-columns",
-      "label": "2 Cols",
+      "id": "one-one",
+      "label": "1/1",
       "icon": "Square2StackIcon",
       "type": "layout"
     },
     {
-      "id": "three-columns",
-      "label": "3 Cols",
-      "icon": "Square3Stack3DIcon",
+      "id": "one-half",
+      "label": "1/2",
+      "icon": "Square2StackIcon",
+      "type": "layout"
+    },
+    {
+      "id": "two-thirds",
+      "label": "2/3",
+      "icon": "Square2StackIcon",
+      "type": "layout"
+    },
+    {
+      "id": "three-fourths",
+      "label": "3/4",
+      "icon": "Square2StackIcon",
+      "type": "layout"
+    },
+    {
+      "id": "four-fifths",
+      "label": "4/5",
+      "icon": "Square2StackIcon",
+      "type": "layout"
+    },
+    {
+      "id": "three-halves",
+      "label": "3/2",
+      "icon": "Square2StackIcon",
+      "type": "layout"
+    },
+    {
+      "id": "four-thirds",
+      "label": "4/3",
+      "icon": "Square2StackIcon",
+      "type": "layout"
+    },
+    {
+      "id": "five-fourths",
+      "label": "5/4",
+      "icon": "Square2StackIcon",
       "type": "layout"
     }
   ],
