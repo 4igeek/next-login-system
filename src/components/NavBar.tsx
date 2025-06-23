@@ -42,7 +42,7 @@ export default function NavBar() {
             ) : (
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium"
+                className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium"
               >
                 Join / Sign In
               </button>

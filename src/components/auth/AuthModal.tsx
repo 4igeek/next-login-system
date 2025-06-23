@@ -46,7 +46,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               className="flex border-b border-border"
             >
               <button
-                className={`flex-1 py-4 text-sm font-medium ${
+                className={`cursor-pointer flex-1 py-4 text-sm font-medium ${
                   activeTab === "login"
                     ? "text-primary border-b-2 border-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 Sign In
               </button>
               <button
-                className={`flex-1 py-4 text-sm font-medium ${
+                className={`cursor-pointer flex-1 py-4 text-sm font-medium ${
                   activeTab === "register"
                     ? "text-primary border-b-2 border-primary"
                     : "text-muted-foreground hover:text-foreground"

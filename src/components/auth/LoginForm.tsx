@@ -91,7 +91,7 @@ export default function LoginForm({
             <button
               type="button"
               onClick={onForgotPassword}
-              className="text-sm text-primary hover:underline"
+              className="cursor-pointer text-sm text-primary hover:underline"
             >
               Forgot Password?
             </button>
@@ -108,7 +108,7 @@ export default function LoginForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+          className="cursor-pointer w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
           {isLoading ? "Logging in..." : "Login"}
         </button>
@@ -116,7 +116,7 @@ export default function LoginForm({
       <div className="text-center text-sm mt-4">
         <button
           onClick={onSwitchToRegister}
-          className="text-primary hover:underline"
+          className="cursor-pointer text-primary hover:underline"
         >
           Need an account? Register
         </button>

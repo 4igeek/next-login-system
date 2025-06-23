@@ -53,7 +53,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
             </p>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Sign out from all devices
             </button>

@@ -142,7 +142,11 @@ export default function RegisterForm({
         onSwitchToLogin?.();
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -216,7 +220,7 @@ export default function RegisterForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="cursor-pointer w-full bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
             {isLoading ? "Sending..." : "Send Verification Code"}
           </button>
@@ -259,7 +263,7 @@ export default function RegisterForm({
               type="button"
               onClick={handleEmailSubmit}
               disabled={isLoading}
-              className="w-full text-primary hover:underline text-sm"
+              className="cursor-pointer w-full text-primary hover:underline text-sm"
             >
               Need a new code? Resend
             </button>
@@ -338,7 +342,7 @@ export default function RegisterForm({
       <div className="text-center text-sm mt-4">
         <button
           onClick={onSwitchToLogin}
-          className="text-primary hover:underline"
+          className="cursor-pointer text-primary hover:underline"
         >
           Already have an account? Login
         </button>
