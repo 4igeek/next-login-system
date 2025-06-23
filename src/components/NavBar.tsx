@@ -7,8 +7,14 @@ import AuthModal from "./auth/AuthModal";
 import { LayoutDashboard } from "lucide-react";
 
 export default function NavBar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    await signOut({ callbackUrl: "/" });
+  };
 
   return (
     <nav className="bg-card border-b border-border h-[4rem]">
@@ -24,7 +30,9 @@ export default function NavBar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {session ? (
+            {status === "loading" || isSigningOut ? (
+              <div className="w-24 h-8 bg-muted animate-pulse rounded-md"></div>
+            ) : session ? (
               <>
                 <Link
                   href="/dashboard"
@@ -33,8 +41,9 @@ export default function NavBar() {
                   <LayoutDashboard size={16} /> Dashboard
                 </Link>
                 <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="cursor-pointer text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium"
+                  onClick={handleSignOut}
+                  disabled={isSigningOut}
+                  className="cursor-pointer text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Sign Out
                 </button>
