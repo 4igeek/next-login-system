@@ -11,13 +11,13 @@ export default function NavBar() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
-    <nav className="bg-zinc-800 border-b border-zinc-700 h-[4rem]">
+    <nav className="bg-card border-b border-border h-[4rem]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
               href="/"
-              className="flex items-center text-white font-bold text-xl"
+              className="flex items-center text-foreground font-bold text-xl"
             >
               Next Login
             </Link>
@@ -28,13 +28,13 @@ export default function NavBar() {
               <>
                 <Link
                   href="/dashboard"
-                  className="text-zinc-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1"
+                  className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1"
                 >
                   <LayoutDashboard size={16} /> Dashboard
                 </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="text-zinc-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                  className="cursor-pointer text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Sign Out
                 </button>

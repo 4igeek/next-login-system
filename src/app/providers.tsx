@@ -8,11 +8,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <ThemeProvider
         attribute="class"
-        defaultTheme="dark"
+        defaultTheme="light"
         enableSystem={false}
         disableTransitionOnChange
       >
-        <div className="min-h-screen bg-zinc-900 text-white">{children}</div>
+        {children}
       </ThemeProvider>
     </SessionProvider>
   );
