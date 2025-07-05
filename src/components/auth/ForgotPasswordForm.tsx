@@ -302,7 +302,10 @@ export default function ForgotPasswordForm({
             </form>
           )}
           <div className="text-center text-sm mt-4">
-            <button onClick={onBack} className="text-primary hover:underline">
+            <button
+              onClick={onBack}
+              className="cursor-pointer text-primary hover:underline"
+            >
               Back to Login
             </button>
           </div>
